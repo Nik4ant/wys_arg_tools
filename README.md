@@ -5,6 +5,7 @@ Warning: WYS spoilers ahead :)
 - [WYS "ARG" tools](#wys-arg-tools)
 	- [What is this?](#what-is-this)
 	- [Main features](#main-features)
+		- [small\_playground.py](#small_playground.py)
 		- [wys\_lib](#wys_lib)
 		- [Simple L2A key bruteforcer in C](#simple-l2a-key-bruteforcer-in-c)
 		- [Python GUI](#python-gui)
@@ -17,6 +18,37 @@ If you're here, you have probably played the game "Will you snail?" made by Jona
 This repository contains some useful tools for solving the WYS ARG. Since we all like different programming languages, some things here are written in multiple languages, (yet some things are written in only one language).
 
 ## Main features
+
+### small_playground.py
+
+a small script that contains the most relevant things for experimenting with L5 data:
+
+```py
+#!/usr/bin/python3
+data5 = "e;R cNsRtOs;;eE OanYti tieSCC Kd eNTT oxShNsteL emeif;pnlO Ka u TnAtTfdLe UTI;o irf lr EuytwHtte onirruEoLh yeltztl  OHSinpstUwA As L AfiMiNBlwsvnRrpTeEM:tyiIaNNsLUeeOTidPon  p DQt; i6inbADNeNFHAloltA BoieScney MI;EoEn otnoBDkWosB udtL lAs OEn yCogVrHnbsAwt  YrpOed s;oaIilteb7klaauL hsiW loFdUen))YsLOU aE  R tsIAdWes;esA tltopAyhr:bKyt( e hMiePaHAacShiRzSA rSsv umteTswe(Mn fVDNUtUwOtshrACh"
+hint5 = "INTELLIGENCECHECKx7x27"
+
+def pw_to_key(pw:str) -> list:
+	return [ord(c)-64 for c in pw]
+def decrypt(data, key:list):
+	index = 0
+	result = data[:0]
+	key_index = 0
+	while data:
+		index = (index + key[key_index]) % len(data)
+		key_index = (key_index + 1) % len(key)
+		result += data[index:index+1]
+		data = data[:index] + data[index+1:]
+	return result
+
+#text2 = decrypt(data1, [17])
+#text3 = decrypt(data2, pw_to_key("HUMANSCANTSOLVETHISSOBETTERSTOPHERE"))
+#text4 = decrypt(data3, pw_to_key("EILLE"))
+#text5 = decrypt(data4, pw_to_key("XDYOYOY"))
+#text6 = ???
+```
+
+Note that this decrypt function works even with `list`s! :)
 
 ### wys_lib
 

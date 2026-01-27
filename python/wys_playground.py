@@ -86,3 +86,19 @@ assert intelligencecheck_encrypt(text3, [ord(x)-64 for x in key2]) == data2
 
 print("all good!")
 """
+
+ok = "INTELLIGENCECHECK"
+k = [ord(c)-64 for c in ok]
+print(k)
+k2 = ok
+#for _ in range(7):
+#	k2 = wys_lib.py_intelligencecheck_decrypt(k2, k)
+k2 = wys_lib.py_dontbother17_decrypt(k2, 7)
+print(k2)
+k2 = [ord(c)-64 for c in k2]
+k2 = [65712362363534280139543*x for x in k2]
+print(k2)
+d = data5
+for _ in range(27):
+	d = wys_lib.py_intelligencecheck_decrypt(d, k2)
+print(d)
