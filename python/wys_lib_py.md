@@ -60,8 +60,23 @@ def bruteforce_level_4(): # warning! this will take quite some time since this i
 									return text
 #L5text = bruteforce_level_4()
 L5data = L5text[L5text.index("DATA(")+5:-1]
-print("L5 text:", L5text)
-print("L5 text:", L5data)
+
+# Step 0) Convert the FULL key to the list of numbers 
+key5_original = pw_to_key("INTELLIGENCECHECKx7x27")
+# Step 1) Apply level 5 key to itself 7 times 
+key5 = key5_original.copy()
+for _ in range(7):
+	key5 = l5a_num(key5, key5_original)
+# Step 2) Multiply all values by 27
+for i in range(len(key5)):
+	key5[i] *= 27
+# Step 3) Decrypt level 5 data
+L6text = l5a_str(data5, key5)
+L6data = L6text[L6text.index("DATA(")+5:-1]
+
+print("L6 text:", L6text)
+print("L6 data:", L6data)
+
 ```
 
 ### Getting data properties
@@ -124,18 +139,21 @@ assert data2 == text2[text2.index("DATA(")+5:-1]
 assert data3 == text3[text3.index("DATA(")+5:-1]
 assert data4 == text4[text4.index("DATA(")+5:-1]
 assert data5 == text5[text5.index("DATA(")+5:-1]
+assert data6 == text6[text6.index("DATA(")+5:-1]
 
 # decrypt functions and keys
 assert dontbother17_decrypt(data1, 17) == text2
 assert humanscantsolvethis_decrypt(data2, key2) == text3
 assert humanscantsolvethis_decrypt(data3, key3) == text4
 assert humanscantsolvethis_decrypt(data4, key4) == text5
+assert humanscantsolvethis_decrypt(data5, key5) == text6
 
 # encrypt functions
 assert dontbother17_encrypt(text2, 17) == data1
 assert humanscantsolvethis_encrypt(text3, key2) == data2
 assert humanscantsolvethis_encrypt(text4, key3) == data3
 assert humanscantsolvethis_encrypt(text5, key4) == data4
+assert humanscantsolvethis_encrypt(text6, key5) == data5
 
 # intelligencecheck_decrypt/encrypt
 assert intelligencecheck_decrypt(data2, [ord(x)-64 for x in key2]) == text3
@@ -157,6 +175,7 @@ print(text2) # "first test passed..."
 print(text3) # "second test passed..."
 print(text4) # "that's correct..."
 print(text5) # "ifo llszu uyjx just kidding..."
+print(text6) # "fifth test passed..."
 ```
 
 as well as only the data (again, it's in format dataN) and hint (like `DONTBOTHER17` or `DLIHCREHTONMAITUBREHTOMYMSIEHS`). L3 and L4 have encrypted helps, so there's `hint3decrypted` and `hint4decrypted` containing decrypted versions of the helps. Levels 2, 3 and 4 need a key which we already know, so there are also `key2`, `key3` and `key4`.
