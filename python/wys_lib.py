@@ -1,12 +1,10 @@
 from collections import Counter
-# I think typing for collection was added in python 3.9-3.10 or smth, but just in case...
-from typing import List
-
 
 __all__ = ["text1", "data1", "hint1", "text2", "data2", "hint2", "key2",\
 	"text3", "data3", "hint3", "hint3decrypted", "key3", "text4", "data4", "hint4", "hint4decrypted", "key4",\
 	"text5", "data5", "hint5", "key5", "text6", "data6", "hint6",\
-	"pw_to_key", "pw_to_key_old", "l5a_str", "l5a_num", "dontbother17_decrypt", "dontbother17_encrypt", "humanscantsolvethis_decrypt", "humanscantsolvethis_encrypt",\
+	"pw_to_key", "pw_to_key_old", "l5a_str", "l5a_num", "l5a",\
+	"dontbother17_decrypt", "dontbother17_encrypt", "humanscantsolvethis_decrypt", "humanscantsolvethis_encrypt",\
 	"sheismymother_decrypt","sheismymother_encrypt", "processingpowercheck_decrypt","processingpowercheck_encrypt",\
 	"intelligencecheck_decrypt", "intelligencecheck_encrypt",\
 	"rev5", "rev5_full",\
@@ -40,25 +38,18 @@ key5 = [135, 135, 189, 54, 648, 135, 189, 324, 135, 81, 189, 243, 297, 216, 81, 
 
 text6 = "fifth test passed; encryption: QUANTUMCHECK7THOUSANDTOTHEPOWEROFSEVEN; DATA(i Ihilfs6kdsRNot A gKBClr Mo;w; t tsEsnVpttzw O xiOhwTtubAaSDRl nesCelnBozuteLi afuiOnenSRa Olsrt iyiL iOTAid snehlw ;HAhoAiElkUi;a neAMh FrsoYatAetrDso:iSuLeeUo mLpt   bT ednfIh YbNt  n vdScpt lsltNee(I;iSeAsr;MULstaeoyM e  Bds ywr wWr too telrLsoyNsUiAiKeen;P yocel stdybteu  aeAnh) nREvNtHIAWLopaNuI eBtlo mnYrL )"
 data6 = "i Ihilfs6kdsRNot A gKBClr Mo;w; t tsEsnVpttzw O xiOhwTtubAaSDRl nesCelnBozuteLi afuiOnenSRa Olsrt iyiL iOTAid snehlw ;HAhoAiElkUi;a neAMh FrsoYatAetrDso:iSuLeeUo mLpt   bT ednfIh YbNt  n vdScpt lsltNee(I;iSeAsr;MULstaeoyM e  Bds ywr wWr too telrLsoyNsUiAiKeen;P yocel stdybteu  aeAnh) nREvNtHIAWLopaNuI eBtlo mnYrL "
-# data6 = pw_to_key_old(data6_str)
 hint6 = "QUANTUMCHECK7THOUSANDTOTHEPOWEROFSEVEN"
 
-
 ## Implementation for level 5 and beyond (compatible with previous levels)
-def pw_to_key(pw: str) -> list:
-	return [
-		int(c) if c in "0123456789" else ord(c) - 64
-		for c in pw.upper()
-	]
-
+def pw_to_key(pw: str) -> list[int]:
+	return [int(c) if c.isdigit() else ord(c) - 64 for c in pw.upper()]
 
 ## Implementation before level 5
-def pw_to_key_old(pw: str) -> list:
+def pw_to_key_old(pw: str) -> list[int]:
 	return [ord(c) - 64 for c in pw]
 
-
 ## Use for final message
-def l5a_str(data: str, key: List[int]) -> str:
+def l5a_str(data: str, key: list[int]) -> str:
 	index = 0
 	keyindex = 0
 	result = ""
@@ -69,9 +60,8 @@ def l5a_str(data: str, key: List[int]) -> str:
 		data = data[:index] + data[index+1:]
 	return result
 
-
 ## Use for intermidiate steps (for example, decrypting the key)
-def l5a_num(data: List[int], key: List[int]) -> List[int]:
+def l5a_num(data: list[int], key: list[int]) -> list[int]:
 	index = 0
 	keyindex = 0
 	result = []
@@ -82,6 +72,17 @@ def l5a_num(data: List[int], key: List[int]) -> List[int]:
 		data = data[:index] + data[index+1:]
 	return result
 
+## works with both strings and lists
+def l5a(data, key: list[int]):
+	index = 0
+	keyindex = 0
+	result = data[:0]
+	while data:
+		index = (index + key[keyindex]) % len(data)
+		keyindex = (keyindex + 1) % len(key)
+		result += data[index:index+1]
+		data = data[:index] + data[index+1:]
+	return result
 
 def dontbother17_decrypt(data: str, n: int = 17) -> str:
 	"""decrypts data encoded with the DONTBOTHER N cypher (N defaults to 17)"""
@@ -136,27 +137,13 @@ def humanscantsolvethis_encrypt(data: str, key: str = "HUMANSCANTSOLVETHISSOBETT
 		del places[index]
 	return result
 
-
 sheismymother_decrypt = lambda data, key="EILLE": humanscantsolvethis_decrypt(data, key)
 sheismymother_encrypt = lambda data, key="EILLE": humanscantsolvethis_encrypt(data, key)
 processingpowercheck_decrypt = lambda data, key="XDYOYOY": humanscantsolvethis_decrypt(data, key)
 processingpowercheck_encrypt = lambda data, key="XDYOYOY": humanscantsolvethis_encrypt(data, key)
+intelligencecheck_decrypt = l5a_str
 
-
-def intelligencecheck_decrypt(data: str, key: List[int]) -> str:
-	"""decrypts data encoded with the L5 algorithm"""
-	index = 0
-	keyindex = 0
-	result = ""
-	while data:
-		index = ((index + key[keyindex]) % len(data) + len(data)) % len(data)
-		keyindex = (keyindex + 1) % len(key)
-		result += data[index]
-		data = data[:index] + data[index+1:]
-	return result
-
-
-def intelligencecheck_encrypt(data: str, key: List[int]) -> str:
+def intelligencecheck_encrypt(data: str, key: list[int]) -> str:
 	"""encrypts data using the L5 algorithm"""
 	keyindex = 0
 	index = 0
